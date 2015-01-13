@@ -3,7 +3,7 @@
  *                                                                             \
  * @author Thomas McKeesick                                                    \
  * Creation Date: Monday, July 14 2014, 21:27                                  \
- * Last Modified:     Thursday, January 08 2015, 00:23
+ * Last Modified:     Tuesday, January 13 2015, 16:34
  *                                                                             \
  * Class Description: A recursive implementation of a Red-Black Tree,          \
  * fully javadoc'd                                                             \
@@ -40,9 +40,13 @@ public class RBTree<T extends Comparable<T>> {
      * @param data The data to insert
      */
     //TODO change general exception throw to a specific exception
-    public void insert(T data) throws Exception {
-        root = put( root, data );
-        root.setColour( BLACK );
+    public void insert(T data) throws IllegalArgumentException {
+        try {
+            root = put( root, data );
+            root.setColour( BLACK );
+        } catch(IllegalArgumentException e) {
+            throw e;
+        }
     }
 
     /**
@@ -55,7 +59,7 @@ public class RBTree<T extends Comparable<T>> {
      * @return The node that has been inserted
      */
     //TODO throw better exception
-    private RBNode<T> put( RBNode<T> node, T data ) throws Exception {
+    private RBNode<T> put( RBNode<T> node, T data ) throws IllegalArgumentException {
         if( node == null ) {
             RBNode<T> newNode = new RBNode<T>(data);
             return newNode;
@@ -67,7 +71,8 @@ public class RBTree<T extends Comparable<T>> {
         } else if( cmp > 0 ) {
             node.setRightChild( put( node.getRightChild(), data ) );
         } else {
-            throw new Exception("Data already exists in tree: " + data.toString());
+            throw new IllegalArgumentException("Data already exists in tree: "
+                    + data.toString());
         }
 
         //Red-red conflict with outside grandchild
