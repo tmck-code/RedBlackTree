@@ -148,15 +148,18 @@ public class RBNode<T extends Comparable< T >> {
      */
     public void display(int n) {
         String indent = "- ";
-
+        
+        //Print the indents for this level
         for(int i = 1; i <= n; i++) {
             System.out.print(indent);
         }
+        //Print the node contents
         System.out.println("ROOT: " + data + ", colour: " + colour);
-
+        //Indent
         for(int i = 1; i <= n; i++) {
             System.out.print(indent);
         }
+        //Print the left child of the node
         System.out.println("LEFT");
         if( leftChild == null) {
             for(int i = 1; i <= n+1; i++) {
@@ -166,10 +169,12 @@ public class RBNode<T extends Comparable< T >> {
         } else {
             leftChild.display(n+1);
         }
-
+        //Indent
         for(int i = 1; i <= n; i++) {
             System.out.print(indent);
         }
+        
+        //Print the right child of the node
         System.out.println("RIGHT");
         if( rightChild == null) {
             for(int i = 1; i <= n+1; i++) {
