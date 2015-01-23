@@ -1,0 +1,27 @@
+File: RBNode.java
+
+Thu Jan 22 13:33:47 AEDT 2015
+version 1.0.0
+
+ * Removed redundant commenting on private variables
+ * Changed red-black variables to boolean
+ * Return booleans instead of throwing exceptions where possible
+ * Implemented setRed() and setBlack() methods
+ * TODO implement Set interface
+
+ --------------------------------------
+
+File: RBTree.java
+
+Fri Jan 23 12:25:50 AEDT 2015
+version 1.0.0
+
+ * Removed redundant comment lines for constuctor and root variable
+ * Removed redundant colour variables
+ * Starting to implement the Set interface in Java, insert now returns
+       a boolean
+ * Updated usage of set colour methods as per update of RBNode.java, the
+       code in the put method is now a bit cleaner.
+ * Fixed contains(T data) method so it no longer fails when passing
+       through deleted nodes
+ * TODO implement better print method

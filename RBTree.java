@@ -1,52 +1,47 @@
-/******************************************************************************\
+/*****************************************************************************\
  * Class Name:    RBTree                                                       \
  *                                                                             \
  * @author Thomas McKeesick                                                    \
  * Creation Date: Monday, July 14 2014, 21:27                                  \
- * Last Modified:     Tuesday, January 13 2015, 16:34
+ * Last Modified:     Friday, January 23 2015, 12:24
  *                                                                             \
  * Class Description: A recursive implementation of a Red-Black Tree,          \
  * fully javadoc'd                                                             \
- ******************************************************************************/
+
+ *
+ * @version 1.0.0
+ * See CHANGELOG
+ *****************************************************************************/
 
 import java.io.PrintWriter;
 
 public class RBTree<T extends Comparable<T>> {
 
-    /** Character representing the colour BLACK as 'B' */
-    private static final char BLACK = 'B';
-
-    /** Character representing the colour RED as 'R' */
-    private static final char RED = 'R';
-
-    /** The root node of this tree */
     private RBNode<T> root;
 
-    /** Public constructor for the tree, initialises the root as null */
     public RBTree() {
         root = null;
     }
 
-    /**
-     * Public method to return the root node of the tree
-     * @return The root node of the tree
-     */
-    public RBNode<T> getRoot(){
+    public RBNode<T> getRoot() {
         return root;
     }
 
     /**
-     * Public method to call the recursive put method to insert data into the tree
+     * Public method to call the recursive put method to insert
+     * data into the tree
      * @param data The data to insert
+     * @return True if the insertion was successful, false if the data
+     * is already in the tree
      */
-    //TODO change general exception throw to a specific exception
-    public void insert(T data) throws IllegalArgumentException {
+    public boolean insert(T data) {
         try {
             root = put( root, data );
-            root.setColour( BLACK );
+            root.setBlack();
         } catch(IllegalArgumentException e) {
-            throw e;
+            return false;
         }
+        return true;
     }
 
     /**
@@ -57,9 +52,10 @@ public class RBTree<T extends Comparable<T>> {
      * recursive method is at
      * @param data The data to insert
      * @return The node that has been inserted
+     * @throws IllegalArgumentException if the data already exists in the tree
      */
-    //TODO throw better exception
-    private RBNode<T> put( RBNode<T> node, T data ) throws IllegalArgumentException {
+    private RBNode<T> put( RBNode<T> node, T data )
+        throws IllegalArgumentException {
         if( node == null ) {
             RBNode<T> newNode = new RBNode<T>(data);
             return newNode;
@@ -76,31 +72,35 @@ public class RBTree<T extends Comparable<T>> {
         }
 
         //Red-red conflict with outside grandchild
-        if( isRed( node.getLeftChild() ) && isRed( node.getLeftChild().getLeftChild() ) ) {
-            node.setColour( RED );
-            node.getLeftChild().setColour( BLACK );
+        if( isRed( node.getLeftChild() )
+                && isRed( node.getLeftChild().getLeftChild()) ) {
+            node.setRed();
+            node.getLeftChild().setBlack();
             node = rightRotation(node);
         }
 
         //Red-red conflict with right-outside grandchild
-        if( isRed( node.getRightChild() ) && isRed( node.getRightChild().getRightChild() ) ) {
-            node.setColour( RED );
-            node.getRightChild().setColour( BLACK );
+        if( isRed( node.getRightChild() )
+                && isRed( node.getRightChild().getRightChild()) ) {
+            node.setRed();
+            node.getRightChild().setBlack();
             node = leftRotation(node);
         }
 
         //Red-red conflict with left-right inside grandchild
-        if( isRed( node.getLeftChild() ) && isRed( node.getLeftChild().getRightChild() ) ) {
-            node.setColour( RED );
-            node.getLeftChild().getRightChild().setColour( BLACK );
+        if( isRed( node.getLeftChild() )
+                && isRed( node.getLeftChild().getRightChild()) ) {
+            node.setRed();
+            node.getLeftChild().getRightChild().setBlack();
             node.setLeftChild( leftRotation(node.getLeftChild() ) );
             node = rightRotation( node );
         }
 
         //Red-red conflict with right-left inside grandchild
-        if( isRed( node.getRightChild() ) && isRed( node.getRightChild().getLeftChild() ) ) {
-            node.setColour( RED );
-            node.getRightChild().getLeftChild().setColour( BLACK );
+        if( isRed( node.getRightChild() )
+                && isRed( node.getRightChild().getLeftChild()) ) {
+            node.setRed();
+            node.getRightChild().getLeftChild().setBlack();
             node.setRightChild( rightRotation( node.getRightChild() ) );
             node = leftRotation( node );
         }
@@ -123,47 +123,50 @@ public class RBTree<T extends Comparable<T>> {
             } else {
                 current = current.getRightChild();
             }
-            if( current == null || current.isDeleted() ) {
+            if( current == null ) {
                 return null;
             }
+        }
+        if( current.isDeleted() ) {
+            return null;
         }
         return current;
     }
 
     /**
      * Public method to remove a node from the tree. Calls the delete method
-     * from the node which changes its deleted boolean to true, does not actually
-     * perform a deletion
+     * from the node which changes its deleted boolean to true, does not
+     * actually perform a deletion
      * @param data The data to remove from the tree
-     * @return True if the delete was successful (the element exits in the tree),
-     * and false otherwise
+     * @return True if the delete was successful (the element exits
+     * in the tree), and false otherwise
      */
-    //TODO throw better exception
-    public boolean removeElement( T data ) throws Exception {
+    public boolean removeElement( T data ) {
         RBNode<T> node = contains( data );
 
         if( node != null ) {
             node.delete();
             return true;
         } else {
-            throw new Exception("Data does not exist: " + data.toString());
+            return false;
         }
     }
 
-    /***************************************\
-     *         COLOUR METHODS               |
-     ***************************************/
+    /**........\----------------------\
+      *			COLOUR METHODS         |
+      *.........\--------------------*/
 
     /**
-     * Public method to determine whether or not a node is red
+     * Public method to determine whether or not a node is red. This method
+     * is in the tree class to avoid null-pointer exceptions.
      * @param node The node to colour-check
-     * @return false if BLACK, true if RED
+     * @return false if BLACK or the node is null, true if RED
      */
     public boolean isRed( RBNode<T> node ) {
         if( node == null ) {
             return false;
         }
-        return node.getColour() == RED;
+        return node.isRed();
     }
 
     /**
@@ -178,23 +181,23 @@ public class RBTree<T extends Comparable<T>> {
                 parent.getLeftChild() == null ) {
             return;
         }
-
         if( !isRed(parent) && isRed(parent.getRightChild())
-        && isRed(parent.getLeftChild()) ) {
+            && isRed(parent.getLeftChild()) ) {
             if( parent != root ) {
-                parent.setColour( RED );
+                parent.setRed();
             }
-            parent.getRightChild().setColour( BLACK );
-            parent.getLeftChild().setColour( BLACK );
+            parent.getRightChild().setBlack();
+            parent.getLeftChild().setBlack();
         }
     }
 
-    /***************************************\
-     *      ROTATION METHODS                |
-     ***************************************/
+    /**........\----------------------\
+      *		   ROTATION METHODS        |
+      *.........\--------------------*/
 
     /**
-     * Private method to perform a right rotation around a supplied grandparent node
+     * Private method to perform a right rotation around a supplied grandparent
+     * node
      * @param grandparent The node to rotate around
      * @return The node now in place of the original grandparent
      */
@@ -220,9 +223,9 @@ public class RBTree<T extends Comparable<T>> {
         return parent;
     }
 
-    /***************************************\
-     *      TRAVERSAL METHODS               |
-     ***************************************/
+    /**........\----------------------\
+      *			TRAVERSAL METHODS      |
+      *.........\--------------------*/
 
     /**
      * Public method called to display the tree, currently in-order traversal
@@ -242,7 +245,7 @@ public class RBTree<T extends Comparable<T>> {
         if( current != null ) {
             displaySubtreeInOrder( current.getLeftChild(), p );
             p.println( "Data is " + current.getData()
-                    + "Node colour: " + current.getColour() );
+                    + "Node colour: " + current.isRed() );
             displaySubtreeInOrder( current.getRightChild(), p );
         }
     }

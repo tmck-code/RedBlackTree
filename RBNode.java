@@ -1,36 +1,27 @@
-/*
+/**
  * Class Name:    RBNode
  *
  * @author Thomas McKeesick
  * Creation Date: Monday, July 14 2014, 20:37
- * Last Modified: Thursday, January 08 2015, 08:00
+ * Last Modified:     Friday, January 23 2015, 12:08
  *
  * Class Description: The Red-Black Node class file,
  *                    all functionality javadoc'd
+ *
+ * @version 1.0.0
+ * See CHANGELOG
  */
 
 public class RBNode<T extends Comparable< T >> {
 
-    /** Final char variable declaring RED as 'R' */
-    private final static char RED = 'R';
+    public static final boolean RED = true;
+    public static final boolean BLACK = false;
 
-    /** Final char variable declaring BLACK as 'B' */
-    private final static char BLACK = 'B';
-
-    /** The data contained in this node must extend the java Comparable interface */
     private T data;
-
-    /** The colour of this node, either RED or BLACK */
-    private char colour;
-
-    /** The right child of this node */
+    private boolean colour = RED;
     private RBNode<T> rightChild;
-
-    /** The left child of this node */
     private RBNode<T> leftChild;
-
-    /** Boolean that is true if the node has been deleted, false otherwise */
-    private boolean deleted;
+    private boolean isDeleted = false;
 
     /**
      * Public constructor that creates a new RBNode, initiates the colour as red
@@ -38,15 +29,11 @@ public class RBNode<T extends Comparable< T >> {
      */
     public RBNode(T data) {
         this.data = data;
-        colour = RED;
-        rightChild = null;
-        leftChild = null;
-        deleted = false;
     }
 
-    /************************************\
-     *			SETTER METHODS           |
-     ************************************/
+    /**........\----------------------\
+      *			SET METHODS            |
+      *.........\--------------------*/
 
     /**
      * Replaces the current node data with new data
@@ -56,34 +43,32 @@ public class RBNode<T extends Comparable< T >> {
         this.data = data;
     }
 
+    public void setRed() {
+        colour = RED;
+    }
+
+    public void setBlack() {
+        colour = BLACK;
+    }
+
     /**
      * Performs a colour switch
      * @param c The new colour to switch to
-     * @return True if the switch is successful, false if c is invalid
-     * or is the same as the current colour
+     * @return True if the switch is successful, false if the parameter
+     * is the same as the current colour
      */
-    public boolean setColour( char c ) {
-        //If the colour is black or red (a legal input), and it is also
-        //not the same as the current colour, change the colour
-        if( ( c == RED || c == BLACK ) && c != colour ) {
+    public boolean setColour( boolean c ) {
+        if(c != colour) {
             colour = c;
             return true;
         }
         return false;
     }
 
-    /**
-     * Public method to set a node as the left child of this node
-     * @param node The node to insert as the left child
-     */
     public void setLeftChild( RBNode<T> node ) {
         leftChild = node;
     }
 
-    /**
-     * Public method to set a node as the right child of this node
-     * @param node The node to insert as the right child
-     */
     public void setRightChild( RBNode<T> node ) {
         rightChild = node;
     }
@@ -94,27 +79,19 @@ public class RBNode<T extends Comparable< T >> {
      * node is discovered by the RBTree contains method, null is returned
      */
     public void delete() {
-        deleted = true;
+        isDeleted = true;
     }
 
-    /************************************\
-     *			GETTER METHODS			 |
-     ************************************/
+    /**........\----------------------\
+     *			GET METHODS            |
+     *.........\---------------------*/
 
-    /**
-     * Public method to return the data stored in the node
-     * @return The data stored in the node
-     */
     public T getData() {
         return data;
     }
 
-    /**
-     * Public method to return the colour of the node
-     * @return The colour of the node
-     */
-    public char getColour() {
-        return colour;
+    public boolean isRed() {
+        return colour == true;
     }
 
     /**
@@ -125,21 +102,13 @@ public class RBNode<T extends Comparable< T >> {
         return leftChild;
     }
 
-    /**
-     * Public method to return the right child of the node
-     * @return The right child of the node
-     */
+
     public RBNode<T> getRightChild() {
         return rightChild;
     }
 
-    /**
-     * Public method to return whether or not this node has been deleted.
-     * Used by the RBTree contains method.
-     * @return True if the node has been deleted, false otherwise
-     */
     public boolean isDeleted() {
-        return deleted;
+        return isDeleted;
     }
 
     /**
@@ -148,7 +117,7 @@ public class RBNode<T extends Comparable< T >> {
      */
     public void display(int n) {
         String indent = "- ";
-        
+
         //Print the indents for this level
         for(int i = 1; i <= n; i++) {
             System.out.print(indent);
@@ -173,7 +142,7 @@ public class RBNode<T extends Comparable< T >> {
         for(int i = 1; i <= n; i++) {
             System.out.print(indent);
         }
-        
+
         //Print the right child of the node
         System.out.println("RIGHT");
         if( rightChild == null) {
